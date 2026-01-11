@@ -13,6 +13,7 @@
 		Moon
 	} from '@lucide/svelte';
 	import { page } from '$app/stores';
+	import { base } from '$app/paths';
 	import { theme } from '$lib/stores/theme';
 	import { onMount } from 'svelte';
 
@@ -20,8 +21,8 @@
 	let mobileMenuOpen = $state(false);
 
 	const navLinks = [
-		{ href: '/docs', label: 'Documentation', icon: Book },
-		{ href: '/self-hosting', label: 'Self-Hosting', icon: Server }
+		{ href: `${base}/docs`, label: 'Documentation', icon: Book },
+		{ href: `${base}/self-hosting`, label: 'Self-Hosting', icon: Server }
 	];
 
 	onMount(() => {
@@ -37,7 +38,7 @@
 	<!-- Header -->
 	<header class="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
 		<div class="container mx-auto flex h-16 items-center justify-between px-4">
-			<a href="/" class="flex items-center gap-2 font-semibold">
+			<a href={base || '/'} class="flex items-center gap-2 font-semibold">
 				<TerminalIcon class="h-5 w-5 text-primary" />
 				<span>Codesfer</span>
 			</a>
@@ -46,7 +47,7 @@
 			<nav class="hidden items-center gap-1 md:flex">
 				{#each navLinks as link}
 					<Button
-						variant={$page.url.pathname === link.href ? 'secondary' : 'ghost'}
+						variant={$page.url.pathname.startsWith(link.href) ? 'secondary' : 'ghost'}
 						size="sm"
 						href={link.href}
 						class="gap-2"
@@ -94,7 +95,7 @@
 				<nav class="container mx-auto flex flex-col gap-1 px-4 py-4">
 					{#each navLinks as link}
 						<Button
-							variant={$page.url.pathname === link.href ? 'secondary' : 'ghost'}
+							variant={$page.url.pathname.startsWith(link.href) ? 'secondary' : 'ghost'}
 							href={link.href}
 							class="w-full justify-start gap-2"
 							onclick={() => (mobileMenuOpen = false)}
@@ -137,13 +138,13 @@
 						GitHub
 					</a>
 					<a
-						href="/docs"
+						href={`${base}/docs`}
 						class="text-sm text-muted-foreground transition-colors hover:text-foreground"
 					>
 						Docs
 					</a>
 					<a
-						href="/self-hosting"
+						href={`${base}/self-hosting`}
 						class="text-sm text-muted-foreground transition-colors hover:text-foreground"
 					>
 						Self-Hosting
