@@ -325,7 +325,7 @@ export INDEX_DB_SOURCE="file:index.db"
 export OBJECT_STORAGE_DRIVER="sqlite"
 export OBJECT_STORAGE_SOURCE="file:object_storage.db"
 
-./build/codeserver -port 3000</code
+codeserver serve --port 3000</code
 								></pre>
 						</div>
 					</CardContent>
@@ -359,7 +359,7 @@ export CF_ACCESS_KEY="your-access-key"
 export CF_SECRET_ACCESS_KEY="your-secret-key"
 export CF_BUCKET="your-bucket-name"
 
-./build/codeserver -port 3000</code
+codeserver serve --port 3000</code
 								></pre>
 						</div>
 					</CardContent>
@@ -393,7 +393,7 @@ export CF_ACCESS_KEY="your-access-key"
 export CF_SECRET_ACCESS_KEY="your-secret-key"
 export CF_BUCKET="your-bucket-name"
 
-./build/codeserver -port 3000</code
+codeserver serve --port 3000</code
 								></pre>
 						</div>
 					</CardContent>
