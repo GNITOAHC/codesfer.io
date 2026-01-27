@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download external assets
-      - run: |
+        run: |
           mkdir -p static
           wget -O static/install.sh https://raw.githubusercontent.com/GNITOAHC/codesfer/main/scripts/install.sh
           wget -O static/install.ps1 https://raw.githubusercontent.com/GNITOAHC/codesfer/main/scripts/install.ps1
