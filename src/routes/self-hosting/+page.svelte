@@ -61,7 +61,7 @@
 					<Terminal
 						title="Server"
 						lines={[
-							{ type: 'command', text: './build/codeserver -port 3000' },
+							{ type: 'command', text: 'codeserve serve --port 3000' },
 							{ type: 'output', text: '> Server running on http://localhost:3000' }
 						]}
 						typeSpeed={25}
@@ -104,8 +104,11 @@
 								<code class="rounded bg-background px-1.5 py-0.5 font-mono text-xs">*_DRIVER</code>
 								specifies the database type (<code class="font-mono text-xs">sqlite</code> or
 								<code class="font-mono text-xs">libsql</code>), and
-								<code class="rounded bg-background px-1.5 py-0.5 font-mono text-xs">*_SOURCE</code> provides
-								the connection string.
+								<code class="rounded bg-background px-1.5 py-0.5 font-mono text-xs">*_SOURCE</code>
+								provides the connection string. Run
+								<code class="rounded bg-background px-1.5 py-0.5 font-mono text-xs"
+									>codeserver init</code
+								> to generate default setups.
 							</p>
 						</div>
 						<div class="overflow-x-auto rounded-lg border">
@@ -183,12 +186,12 @@
 									<tr class="transition-colors hover:bg-muted/30">
 										<td class="px-4 py-4">
 											<code class="rounded bg-muted px-2 py-1 font-mono text-xs font-semibold"
-												>OBJECT_BACKEND_DRIVER</code
+												>OBJECT_STORAGE_DRIVER</code
 											>
 										</td>
 										<td class="px-4 py-4">
 											<div class="flex items-center gap-2 text-muted-foreground">
-												<span>Object storage backend</span>
+												<span>Object storage driver</span>
 												<div class="flex gap-1.5">
 													<Badge variant="outline" class="font-mono text-xs">sqlite</Badge>
 													<Badge variant="outline" class="font-mono text-xs">r2</Badge>
@@ -206,7 +209,7 @@
 											>
 										</td>
 										<td class="px-4 py-4 text-muted-foreground">
-											Object storage connection string (when OBJECT_BACKEND_DRIVER=sqlite)
+											Object storage connection string (when OBJECT_STORAGE_DRIVER=sqlite)
 										</td>
 										<td class="px-4 py-4 text-muted-foreground">
 											<code class="font-mono text-xs">file:object_storage.db</code>
@@ -228,7 +231,7 @@
 						<CardDescription>
 							Required when using <code
 								class="rounded bg-background px-1.5 py-0.5 font-mono text-xs"
-								>OBJECT_BACKEND_DRIVER=r2</code
+								>OBJECT_STORAGE_DRIVER=r2</code
 							>
 						</CardDescription>
 					</CardHeader>
@@ -319,7 +322,7 @@
 export DB_SOURCE="file:auth.db"
 export INDEX_DB_DRIVER="sqlite"
 export INDEX_DB_SOURCE="file:index.db"
-export OBJECT_BACKEND_DRIVER="sqlite"
+export OBJECT_STORAGE_DRIVER="sqlite"
 export OBJECT_STORAGE_SOURCE="file:object_storage.db"
 
 ./build/codeserver -port 3000</code
@@ -350,7 +353,7 @@ export OBJECT_STORAGE_SOURCE="file:object_storage.db"
 export DB_SOURCE="file:auth.db"
 export INDEX_DB_DRIVER="sqlite"
 export INDEX_DB_SOURCE="file:index.db"
-export OBJECT_BACKEND_DRIVER="r2"
+export OBJECT_STORAGE_DRIVER="r2"
 export CF_ACCOUNT_ID="your-account-id"
 export CF_ACCESS_KEY="your-access-key"
 export CF_SECRET_ACCESS_KEY="your-secret-key"
@@ -384,7 +387,7 @@ export CF_BUCKET="your-bucket-name"
 export DB_SOURCE="libsql://your-database.turso.io?authToken=your-auth-token"
 export INDEX_DB_DRIVER="libsql"
 export INDEX_DB_SOURCE="libsql://your-index-db.turso.io?authToken=your-auth-token"
-export OBJECT_BACKEND_DRIVER="r2"
+export OBJECT_STORAGE_DRIVER="r2"
 export CF_ACCOUNT_ID="your-account-id"
 export CF_ACCESS_KEY="your-access-key"
 export CF_SECRET_ACCESS_KEY="your-secret-key"

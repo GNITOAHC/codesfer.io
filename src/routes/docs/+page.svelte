@@ -130,7 +130,7 @@
 					<CardContent>
 						<p class="mb-4 text-sm text-muted-foreground">Create a new account on the server.</p>
 						<code class="block rounded-lg border bg-muted/50 px-3 py-2 font-mono text-sm"
-							>codesfer register</code
+							>codesfer auth register</code
 						>
 					</CardContent>
 				</Card>
@@ -145,7 +145,7 @@
 					<CardContent>
 						<p class="mb-4 text-sm text-muted-foreground">Log in to your account.</p>
 						<code class="block rounded-lg border bg-muted/50 px-3 py-2 font-mono text-sm"
-							>codesfer login</code
+							>codesfer auth login</code
 						>
 					</CardContent>
 				</Card>
@@ -160,7 +160,7 @@
 					<CardContent>
 						<p class="mb-4 text-sm text-muted-foreground">Log out from your current session.</p>
 						<code class="block rounded-lg border bg-muted/50 px-3 py-2 font-mono text-sm"
-							>codesfer logout</code
+							>codesfer auth logout</code
 						>
 					</CardContent>
 				</Card>
