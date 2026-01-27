@@ -9,7 +9,7 @@
 	<title>{$page.status} - {$page.error?.message || 'Error'} | Codesfer</title>
 </svelte:head>
 
-<div class="flex min-h-screen items-center justify-center px-4">
+<div class="flex flex-1 items-center justify-center px-4">
 	<div class="max-w-2xl text-center">
 		<div
 			class="mb-6 bg-linear-to-r from-primary to-muted-foreground bg-clip-text text-8xl font-bold text-transparent md:text-9xl"
