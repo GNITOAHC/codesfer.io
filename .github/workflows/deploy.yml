@@ -22,6 +22,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Download external assets
+      - run: |
+          mkdir -p static
+          wget -O static/install.sh https://raw.githubusercontent.com/GNITOAHC/codesfer/main/scripts/install.sh
+          wget -O static/install.ps1 https://raw.githubusercontent.com/GNITOAHC/codesfer/main/scripts/install.ps1
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
