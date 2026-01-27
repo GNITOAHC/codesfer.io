@@ -58,6 +58,7 @@
 						<TabsList class="mb-4">
 							<TabsTrigger value="shell">Shell/Powershell</TabsTrigger>
 							<TabsTrigger value="homebrew">Homebrew</TabsTrigger>
+							<TabsTrigger value="go">Go</TabsTrigger>
 							<TabsTrigger value="releases">Releases</TabsTrigger>
 							<TabsTrigger value="source">Source</TabsTrigger>
 						</TabsList>
@@ -96,6 +97,17 @@
 							<div class="rounded-lg border bg-muted/50 px-3 py-2 font-mono text-sm">
 								<code class="block">brew tap gnitoahc/tap</code>
 								<code class="block">brew install gnitoahc/tap/codesfer</code>
+							</div>
+						</TabsContent>
+
+						<TabsContent value="go">
+							<p class="mb-3 text-sm text-muted-foreground">
+								Requires Go installed on your system.
+							</p>
+							<div class="rounded-lg border bg-muted/50 px-3 py-2 font-mono text-sm">
+								<code class="block"
+									>go install github.com/gnitoahc/codesfer/cmd/codesfer@latest</code
+								>
 							</div>
 						</TabsContent>
 
