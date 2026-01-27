@@ -7,6 +7,7 @@
 		CardTitle,
 		CardDescription
 	} from '$lib/components/ui/card';
+	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
 	// prettier-ignore
 	import { Download, UserPlus, LogIn, LogOut, Upload, FolderDown, List, Trash2, BookOpen, Shield, Terminal as TerminalIcon } from '@lucide/svelte';
 </script>
@@ -51,60 +52,79 @@
 				</p>
 			</div>
 
-			<div class="space-y-6">
-				<Card class="border-2 transition-shadow hover:shadow-lg">
-					<CardHeader>
-						<CardTitle class="flex items-center gap-2">
-							Install via Homebrew
-							<Badge variant="secondary">Recommended for MacOS</Badge>
-						</CardTitle>
-						<CardDescription>
-							The easiest way to install Codesfer on macOS and Linux using Homebrew.
-						</CardDescription>
-					</CardHeader>
-					<CardContent>
-						<div class="rounded-lg border bg-muted/50 px-3 py-2 font-mono text-sm">
-							<code class="block">brew tap gnitoahc/tap</code>
-							<code class="block">brew install gnitoahc/tap/codesfer</code>
-						</div>
-					</CardContent>
-				</Card>
+			<Card class="border-2">
+				<CardContent>
+					<Tabs value="shell">
+						<TabsList class="mb-4">
+							<TabsTrigger value="shell">Shell/Powershell</TabsTrigger>
+							<TabsTrigger value="homebrew">Homebrew</TabsTrigger>
+							<TabsTrigger value="releases">Releases</TabsTrigger>
+							<TabsTrigger value="source">Source</TabsTrigger>
+						</TabsList>
 
-				<Card class="border-2 transition-shadow hover:shadow-lg">
-					<CardHeader>
-						<CardTitle class="flex items-center gap-2">
-							Download from Releases
-							<Badge variant="secondary">Recommended for Linux/Windows</Badge>
-						</CardTitle>
-						<CardDescription>
-							Download the pre-built binary for your platform from GitHub Releases.
-						</CardDescription>
-					</CardHeader>
-					<CardContent>
-						<a
-							href="https://github.com/GNITOAHC/codesfer/releases"
-							class="inline-flex items-center gap-2 text-primary underline hover:no-underline"
-						>
-							<Download class="h-4 w-4" />
-							View Releases on GitHub
-						</a>
-					</CardContent>
-				</Card>
+						<TabsContent value="shell">
+							<div class="space-y-6">
+								<div>
+									<div class="mb-2 flex items-center gap-2">
+										<Badge variant="secondary">Recommended for Linux</Badge>
+										<span class="text-sm text-muted-foreground">Also available for macOS</span>
+									</div>
+									<div class="rounded-lg border bg-muted/50 px-3 py-2 font-mono text-sm">
+										<code class="block">curl -LsSf https://www.codesfer.io/install.sh | sh</code>
+										<code class="block text-muted-foreground"># or using wget</code>
+										<code class="block">wget -qO- https://www.codesfer.io/install.sh | sh</code>
+									</div>
+								</div>
+								<div>
+									<div class="mb-2">
+										<Badge variant="secondary">Recommended for Windows</Badge>
+									</div>
+									<div class="rounded-lg border bg-muted/50 px-3 py-2 font-mono text-sm">
+										<code class="block"
+											>powershell -ExecutionPolicy ByPass -c "irm
+											https://www.codesfer.io/install.ps1 | iex"</code
+										>
+									</div>
+								</div>
+							</div>
+						</TabsContent>
 
-				<Card class="border-2 transition-shadow hover:shadow-lg">
-					<CardHeader>
-						<CardTitle>Build from Source</CardTitle>
-						<CardDescription>Requires Go 1.24+ installed on your system.</CardDescription>
-					</CardHeader>
-					<CardContent>
-						<div class="rounded-lg border bg-muted/50 px-3 py-2 font-mono text-sm">
-							<code class="block">git clone https://github.com/GNITOAHC/codesfer.git</code>
-							<code class="block">cd codesfer</code>
-							<code class="block">make all</code>
-						</div>
-					</CardContent>
-				</Card>
-			</div>
+						<TabsContent value="homebrew">
+							<div class="mb-2">
+								<Badge variant="secondary">Recommended for macOS</Badge>
+							</div>
+							<div class="rounded-lg border bg-muted/50 px-3 py-2 font-mono text-sm">
+								<code class="block">brew tap gnitoahc/tap</code>
+								<code class="block">brew install gnitoahc/tap/codesfer</code>
+							</div>
+						</TabsContent>
+
+						<TabsContent value="releases">
+							<p class="mb-3 text-sm text-muted-foreground">
+								Download the pre-built binary for your platform from GitHub Releases.
+							</p>
+							<a
+								href="https://github.com/GNITOAHC/codesfer/releases"
+								class="inline-flex items-center gap-2 text-primary underline hover:no-underline"
+							>
+								<Download class="h-4 w-4" />
+								View Releases on GitHub
+							</a>
+						</TabsContent>
+
+						<TabsContent value="source">
+							<p class="mb-3 text-sm text-muted-foreground">
+								Requires Go 1.24+ installed on your system.
+							</p>
+							<div class="rounded-lg border bg-muted/50 px-3 py-2 font-mono text-sm">
+								<code class="block">git clone https://github.com/GNITOAHC/codesfer.git</code>
+								<code class="block">cd codesfer</code>
+								<code class="block">make all</code>
+							</div>
+						</TabsContent>
+					</Tabs>
+				</CardContent>
+			</Card>
 		</section>
 
 		<!-- Authentication Section -->
