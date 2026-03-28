@@ -1,6 +1,6 @@
 <script lang="ts">
 	import './layout.css';
-	import favicon from '$lib/assets/favicon.svg';
+	import favicon from '$lib/assets/terminal.svg';
 	import { Button } from '$lib/components/ui/button';
 	import {
 		Terminal as TerminalIcon,
