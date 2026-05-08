@@ -124,7 +124,7 @@
 									<tr class="transition-colors hover:bg-muted/30">
 										<td class="px-4 py-4">
 											<code class="rounded bg-muted px-2 py-1 font-mono text-xs font-semibold"
-												>DB_DRIVER</code
+												>AUTH_DB_DRIVER</code
 											>
 										</td>
 										<td class="px-4 py-4">
@@ -143,7 +143,7 @@
 									<tr class="transition-colors hover:bg-muted/30">
 										<td class="px-4 py-4">
 											<code class="rounded bg-muted px-2 py-1 font-mono text-xs font-semibold"
-												>DB_SOURCE</code
+												>AUTH_DB_SOURCE</code
 											>
 										</td>
 										<td class="px-4 py-4 text-muted-foreground">Auth database connection string</td>
@@ -318,8 +318,8 @@
 					<CardContent>
 						<div class="overflow-x-auto rounded-lg border bg-muted/50 p-4">
 							<pre class="font-mono text-xs leading-relaxed"><code
-									>export DB_DRIVER="sqlite"
-export DB_SOURCE="file:auth.db"
+									>export AUTH_DB_DRIVER="sqlite"
+export AUTH_DB_SOURCE="file:auth.db"
 export INDEX_DB_DRIVER="sqlite"
 export INDEX_DB_SOURCE="file:index.db"
 export OBJECT_STORAGE_DRIVER="sqlite"
@@ -349,8 +349,8 @@ codeserver serve --port 3000</code
 					<CardContent>
 						<div class="overflow-x-auto rounded-lg border bg-muted/50 p-4">
 							<pre class="font-mono text-xs leading-relaxed"><code
-									>export DB_DRIVER="sqlite"
-export DB_SOURCE="file:auth.db"
+									>export AUTH_DB_DRIVER="sqlite"
+export AUTH_DB_SOURCE="file:auth.db"
 export INDEX_DB_DRIVER="sqlite"
 export INDEX_DB_SOURCE="file:index.db"
 export OBJECT_STORAGE_DRIVER="r2"
@@ -383,8 +383,8 @@ codeserver serve --port 3000</code
 					<CardContent>
 						<div class="overflow-x-auto rounded-lg border bg-muted/50 p-4">
 							<pre class="font-mono text-xs leading-relaxed"><code
-									>export DB_DRIVER="libsql"
-export DB_SOURCE="libsql://your-database.turso.io?authToken=your-auth-token"
+									>export AUTH_DB_DRIVER="libsql"
+export AUTH_DB_SOURCE="libsql://your-database.turso.io?authToken=your-auth-token"
 export INDEX_DB_DRIVER="libsql"
 export INDEX_DB_SOURCE="libsql://your-index-db.turso.io?authToken=your-auth-token"
 export OBJECT_STORAGE_DRIVER="r2"
