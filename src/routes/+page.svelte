@@ -3,7 +3,7 @@
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import { Terminal } from '$lib/components/terminal';
 	import { Lock, Database, Monitor, Eye, Download, ArrowRight } from '@lucide/svelte';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 </script>
 
 <svelte:head>
@@ -30,7 +30,7 @@
 					<Download class="h-4 w-4" />
 					Download Binary
 				</Button>
-				<Button size="lg" variant="outline" href={`${base}/docs`} class="gap-2">
+				<Button size="lg" variant="outline" href={resolve('/docs')} class="gap-2">
 					Get Started
 					<ArrowRight class="h-4 w-4" />
 				</Button>
@@ -133,8 +133,8 @@
 			Download the CLI, self-host your server, or read the documentation.
 		</p>
 		<div class="flex flex-col justify-center gap-4 sm:flex-row">
-			<Button href={`${base}/docs`}>Read Documentation</Button>
-			<Button variant="outline" href={`${base}/self-hosting`}>Self-Hosting Guide</Button>
+			<Button href={resolve('/docs')}>Read Documentation</Button>
+			<Button variant="outline" href={resolve('/self-hosting')}>Self-Hosting Guide</Button>
 		</div>
 	</div>
 </section>
