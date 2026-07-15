@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import { createZip } from '$lib/zip';
 
 export const API_BASE: string = import.meta.env.VITE_API_BASE ?? '';
 
@@ -88,37 +89,58 @@ export interface UploadResult {
 	path: string;
 }
 
-// Files larger than one chunk go through /storage/upload/chunk; R2 multipart
-// requires all parts except the last to be at least 5 MiB.
-const CHUNK_SIZE = 20 * 1024 * 1024;
+// Mirrors internal/cli.sanitizePath: paths may only contain A-Z a-z 0-9 _ - /
+export function sanitizePath(p: string): string {
+	return p.replace(/[^A-Za-z0-9_\-/]/g, '');
+}
 
+// Match the CLI: chunks stay under Cloudflare's 100 MB request-body limit.
+const CHUNK_SIZE = 90 << 20; // 90 MB
+
+// Mirrors client.generateUploadID: random 8-byte hex string.
+function generateUploadId(): string {
+	const bytes = crypto.getRandomValues(new Uint8Array(8));
+	return [...bytes].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+function setPushFields(form: FormData, path: string, password: string, meta: string) {
+	if (path) form.set('path', path);
+	if (password) form.set('password', password);
+	form.set('meta', meta);
+}
+
+// Mirrors `codesfer push <file>`: wrap the file in a zip archive (the server
+// stores and serves zips), derive the object path from the sanitized filename,
+// and attach the file-tree metadata used by /storage/info.
 export async function uploadFile(
 	file: File,
 	password = '',
 	onProgress?: (done: number, total: number) => void
 ): Promise<UploadResult> {
-	if (file.size <= CHUNK_SIZE) {
+	const path = sanitizePath(file.name);
+	const meta = JSON.stringify({ tree: [file.name] });
+	const zip = await createZip([{ name: file.name, data: file, lastModified: file.lastModified }]);
+
+	if (zip.size <= CHUNK_SIZE) {
 		const form = new FormData();
-		form.set('file', file);
-		form.set('path', file.name);
-		if (password) form.set('password', password);
+		form.set('file', zip, `${path || 'upload'}.zip`);
+		setPushFields(form, path, password, meta);
 		onProgress?.(0, 1);
 		const res = await request('/storage/upload', { method: 'POST', body: form });
 		onProgress?.(1, 1);
 		return res.json();
 	}
 
-	const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-	const uploadId = crypto.randomUUID();
+	const totalChunks = Math.ceil(zip.size / CHUNK_SIZE);
+	const uploadId = generateUploadId();
 	let res: Response | undefined;
 	for (let i = 0; i < totalChunks; i++) {
 		const form = new FormData();
 		form.set('upload_id', uploadId);
 		form.set('chunk_index', String(i));
 		form.set('total_chunks', String(totalChunks));
-		form.set('path', file.name);
-		if (password) form.set('password', password);
-		form.set('file', file.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE), file.name);
+		form.set('file', zip.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE), `chunk_${i}`);
+		setPushFields(form, path, password, meta);
 		res = await request('/storage/upload/chunk', { method: 'POST', body: form });
 		onProgress?.(i + 1, totalChunks);
 	}

@@ -18,6 +18,7 @@
 		try {
 			for (const [idx, file] of files.entries()) {
 				const prefix = files.length > 1 ? `(${idx + 1}/${files.length}) ` : '';
+				status = `${prefix}Compressing ${file.name}...`;
 				await uploadFile(file, '', (done, total) => {
 					status =
 						total > 1
