@@ -5,6 +5,7 @@
 		Book,
 		Server,
 		Github,
+		LayoutDashboard,
 		Menu,
 		X,
 		Sun,
@@ -54,6 +55,10 @@
 				<Button variant="ghost" size="sm" href="https://github.com/GNITOAHC/codesfer" class="gap-2">
 					<Github class="h-4 w-4" />
 					GitHub
+				</Button>
+				<Button variant="ghost" size="sm" href={resolve('/dashboard')} class="gap-2">
+					<LayoutDashboard class="h-4 w-4" />
+					Dashboard
 				</Button>
 				<Button variant="ghost" size="sm" onclick={() => theme.toggle()} aria-label="Toggle theme">
 					{#if $theme === 'dark'}
@@ -105,6 +110,15 @@
 					>
 						<Github class="h-4 w-4" />
 						GitHub
+					</Button>
+					<Button
+						variant="ghost"
+						href={resolve('/dashboard')}
+						class="w-full justify-start gap-2"
+						onclick={() => (mobileMenuOpen = false)}
+					>
+						<LayoutDashboard class="h-4 w-4" />
+						Dashboard
 					</Button>
 				</nav>
 			</div>
