@@ -19,9 +19,11 @@
 
 import { createZip } from '$lib/zip';
 
-// Go server base URL (VITE_API_BASE). Used server-side (load functions, /api
-// proxy) and for the public /download links on the share page.
-export const API_BASE: string = import.meta.env.VITE_API_BASE ?? '';
+// Go server base URL. Used server-side (load functions, /api proxy) and for
+// the public /download links on the share page. Baked in at build time;
+// set VITE_API_BASE to override (e.g. a local server during development,
+// or a self-hosted instance).
+export const API_BASE: string = import.meta.env.VITE_API_BASE ?? 'https://api.codesfer.io';
 
 export interface AccountSession {
 	name: string;
