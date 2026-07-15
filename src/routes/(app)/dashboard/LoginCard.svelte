@@ -2,6 +2,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { enhance } from '$app/forms';
+	import { page } from '$app/state';
 
 	interface Props {
 		error?: string;
@@ -30,6 +31,7 @@
 					};
 				}}
 			>
+				<input type="hidden" name="redirect" value={page.url.searchParams.get('redirect') ?? ''} />
 				<label class="flex flex-col gap-1.5 text-sm">
 					Email
 					<input

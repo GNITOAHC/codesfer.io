@@ -90,7 +90,10 @@
 					</Card.Description>
 				</Card.Header>
 				<Card.Content>
-					<Button href={resolve('/dashboard')} class="w-full">Sign in</Button>
+					<Button
+						href={`${resolve('/dashboard')}?redirect=${encodeURIComponent(`/d/${data.key}`)}`}
+						class="w-full">Sign in</Button
+					>
 				</Card.Content>
 			{:else}
 				<Card.Header>

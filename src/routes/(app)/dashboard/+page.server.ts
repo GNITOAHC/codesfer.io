@@ -1,5 +1,5 @@
 import type { Actions, PageServerLoad } from './$types';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import { API_BASE, type Account, type StoredObject } from '$lib/api';
 
@@ -53,6 +53,12 @@ export const actions: Actions = {
 		}
 
 		cookies.set(COOKIE, await res.text(), COOKIE_OPTS);
+
+		// Only same-origin paths ("/..." but not "//host") to prevent open redirects.
+		const target = form.get('redirect');
+		if (typeof target === 'string' && target.startsWith('/') && !target.startsWith('//')) {
+			redirect(303, target);
+		}
 	},
 	logout: async ({ cookies, fetch }) => {
 		const session = cookies.get(COOKIE);
