@@ -45,8 +45,8 @@
 							<td class="px-4 py-2">
 								<span class="flex items-center gap-2">
 									{obj.path}
-									{#if obj.password}
-										<Badge variant="secondary">protected</Badge>
+									{#if obj.access_scope !== 'public'}
+										<Badge variant="secondary">{obj.access_scope}</Badge>
 									{/if}
 								</span>
 							</td>

@@ -40,15 +40,16 @@ export interface Account {
 	sessions: AccountSession[];
 }
 
+export type AccessScope = 'owner' | 'authenticated' | 'public';
+
 export interface StoredObject {
 	key?: string;
 	path: string;
 	password?: string;
 	created_at: number;
+	access_scope: AccessScope;
 	meta?: Record<string, string>;
 }
-
-export type AccessScope = 'owner' | 'authenticated' | 'public';
 
 export interface ObjectInfo {
 	key: string;
@@ -114,7 +115,13 @@ function generateUploadId(): string {
 	return [...bytes].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-function setPushFields(form: FormData, path: string, password: string, meta: string, access: AccessScope) {
+function setPushFields(
+	form: FormData,
+	path: string,
+	password: string,
+	meta: string,
+	access: AccessScope
+) {
 	if (path) form.set('path', path);
 	if (password) form.set('password', password);
 	if (access !== 'public') form.set('access', access);
