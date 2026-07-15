@@ -1,33 +1,14 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { login } from '$lib/api';
+	import { enhance } from '$app/forms';
 
 	interface Props {
-		onsuccess: () => void;
+		error?: string;
 	}
 
-	let { onsuccess }: Props = $props();
-
-	let email = $state('');
-	let password = $state('');
-	let error = $state('');
+	let { error = '' }: Props = $props();
 	let loggingIn = $state(false);
-
-	async function handleLogin(event: SubmitEvent) {
-		event.preventDefault();
-		loggingIn = true;
-		error = '';
-		try {
-			await login(email, password);
-			password = '';
-			onsuccess();
-		} catch (e) {
-			error = e instanceof Error ? e.message : String(e);
-		} finally {
-			loggingIn = false;
-		}
-	}
 </script>
 
 <div class="mx-auto max-w-sm py-16">
@@ -37,12 +18,23 @@
 			<Card.Description>Access your uploaded files</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<form class="flex flex-col gap-4" onsubmit={handleLogin}>
+			<form
+				method="POST"
+				action="?/login"
+				class="flex flex-col gap-4"
+				use:enhance={() => {
+					loggingIn = true;
+					return async ({ update }) => {
+						loggingIn = false;
+						await update();
+					};
+				}}
+			>
 				<label class="flex flex-col gap-1.5 text-sm">
 					Email
 					<input
 						type="email"
-						bind:value={email}
+						name="email"
 						required
 						class="h-9 rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
 					/>
@@ -51,7 +43,7 @@
 					Password
 					<input
 						type="password"
-						bind:value={password}
+						name="password"
 						required
 						class="h-9 rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
 					/>

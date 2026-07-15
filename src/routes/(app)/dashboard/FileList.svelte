@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Copy, Trash2 } from '@lucide/svelte';
-	import { downloadUrl, type StoredObject } from '$lib/api';
+	import { Copy, Download, Trash2 } from '@lucide/svelte';
+	import { downloadHref, sharePath, type StoredObject } from '$lib/api';
 
 	interface Props {
 		objects: StoredObject[];
@@ -12,7 +12,7 @@
 	let { objects, onremove }: Props = $props();
 
 	function copyLink(key: string) {
-		navigator.clipboard.writeText(new URL(downloadUrl(key), location.href).href);
+		navigator.clipboard.writeText(new URL(sharePath(key), location.href).href);
 	}
 
 	function formatDate(unixSeconds: number): string {
@@ -56,8 +56,16 @@
 								<Button
 									variant="ghost"
 									size="sm"
+									href={downloadHref(obj.key ?? '', obj.password ?? '')}
+									aria-label="Download file"
+								>
+									<Download class="h-4 w-4" />
+								</Button>
+								<Button
+									variant="ghost"
+									size="sm"
 									onclick={() => copyLink(obj.key ?? '')}
-									aria-label="Copy download link"
+									aria-label="Copy share link"
 								>
 									<Copy class="h-4 w-4" />
 								</Button>

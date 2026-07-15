@@ -1,19 +1,28 @@
-import { browser } from '$app/environment';
+// Client for the codesfer Go server (github.com/gnitoahc/codesfer,
+// internal/server package). Two access paths, chosen by where the code runs:
+//
+// - Browser code never talks to the Go server directly and never sees the
+//   session: it calls the same-origin /api proxy
+//   (src/routes/api/[...path]/+server.ts), which injects the Authorization
+//   header from the httpOnly `session` cookie. Everything below that uses
+//   request() follows this path.
+// - Server code (+page.server.ts load/actions) talks to the Go server
+//   directly via API_BASE with an explicit Authorization header.
+//
+// Upload semantics intentionally mirror the CLI (`codesfer push`,
+// internal/cli + internal/client in the server repo): payloads are zip
+// archives, paths are sanitized the same way, metadata carries the file tree,
+// and files over 90 MB switch to chunked upload. Keep the two in sync — the
+// server assumes CLI conventions.
+//
+// The types mirror pkg/api in the server repo.
+
 import { createZip } from '$lib/zip';
 
+// Go server base URL (VITE_API_BASE). Used server-side (load functions, /api
+// proxy) and for the public /download links on the share page.
 export const API_BASE: string = import.meta.env.VITE_API_BASE ?? '';
 
-const SESSION_KEY = 'codesfer_session';
-
-export function getSession(): string | null {
-	return browser ? localStorage.getItem(SESSION_KEY) : null;
-}
-
-export function clearSession(): void {
-	localStorage.removeItem(SESSION_KEY);
-}
-
-// Mirrors pkg/api in the codesfer server repo.
 export interface AccountSession {
 	name: string;
 	location: string;
@@ -37,43 +46,21 @@ export interface StoredObject {
 	meta?: Record<string, string>;
 }
 
+export interface ObjectInfo {
+	key: string;
+	owner: string;
+	path: string;
+	created_at: number;
+	protected: boolean;
+	metadata?: Record<string, unknown>;
+}
+
+// Client-side requests go through the same-origin /api proxy, which attaches
+// the Authorization header from the httpOnly session cookie.
 async function request(path: string, init: RequestInit = {}): Promise<Response> {
-	const session = getSession();
-	const headers = new Headers(init.headers);
-	if (session) headers.set('Authorization', `Bearer ${session}`);
-	const res = await fetch(`${API_BASE}${path}`, { ...init, headers });
+	const res = await fetch(`/api${path}`, init);
 	if (!res.ok) throw new Error((await res.text()) || res.statusText);
 	return res;
-}
-
-export async function login(email: string, password: string): Promise<string> {
-	const res = await request('/auth/login', {
-		method: 'POST',
-		body: JSON.stringify({ email, password })
-	});
-	const sessionId = await res.text();
-	localStorage.setItem(SESSION_KEY, sessionId);
-	return sessionId;
-}
-
-export async function logout(): Promise<void> {
-	try {
-		await request('/auth/logout', { method: 'POST' });
-	} finally {
-		clearSession();
-	}
-}
-
-export async function me(): Promise<Account> {
-	const session = getSession();
-	if (!session) throw new Error('not logged in');
-	const res = await request(`/auth/me?session_id=${encodeURIComponent(session)}`);
-	return res.json();
-}
-
-export async function listObjects(): Promise<StoredObject[]> {
-	const res = await request('/storage/list');
-	return (await res.json()) ?? [];
 }
 
 export async function removeObject(key: string): Promise<void> {
@@ -82,6 +69,25 @@ export async function removeObject(key: string): Promise<void> {
 
 export async function logoutSession(target: string): Promise<void> {
 	await request(`/auth/logout?target=${encodeURIComponent(target)}`, { method: 'POST' });
+}
+
+// Dashboard download: same-origin, streamed through the /api proxy so the
+// Authorization header is attached server-side.
+export function downloadHref(key: string, password = ''): string {
+	const qs = new URLSearchParams({ key });
+	if (password) qs.set('password', password);
+	return `/api/storage/download?${qs}`;
+}
+
+// Shareable link, resolved against the current origin by callers.
+export function sharePath(key: string): string {
+	return `/d/${encodeURIComponent(key)}`;
+}
+
+// Public download from the Go server's /download route (used on the share page).
+export function publicDownloadUrl(key: string, password = ''): string {
+	const suffix = password ? `?password=${encodeURIComponent(password)}` : '';
+	return `${API_BASE}/download/${encodeURIComponent(key)}.zip${suffix}`;
 }
 
 export interface UploadResult {
@@ -145,8 +151,4 @@ export async function uploadFile(
 		onProgress?.(i + 1, totalChunks);
 	}
 	return res!.json();
-}
-
-export function downloadUrl(key: string): string {
-	return `${API_BASE}/download/${key}.zip`;
 }
