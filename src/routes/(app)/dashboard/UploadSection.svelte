@@ -11,6 +11,7 @@
 	let uploading = $state(false);
 	let status = $state('');
 	let error = $state('');
+	let requireSignIn = $state(false);
 
 	async function handleFiles(files: File[]) {
 		uploading = true;
@@ -19,12 +20,17 @@
 			for (const [idx, file] of files.entries()) {
 				const prefix = files.length > 1 ? `(${idx + 1}/${files.length}) ` : '';
 				status = `${prefix}Compressing ${file.name}...`;
-				await uploadFile(file, '', (done, total) => {
-					status =
-						total > 1
-							? `${prefix}Uploading ${file.name}... chunk ${done}/${total}`
-							: `${prefix}Uploading ${file.name}...`;
-				});
+				await uploadFile(
+					file,
+					'',
+					(done, total) => {
+						status =
+							total > 1
+								? `${prefix}Uploading ${file.name}... chunk ${done}/${total}`
+								: `${prefix}Uploading ${file.name}...`;
+					},
+					requireSignIn ? 'authenticated' : 'public'
+				);
 			}
 			onuploaded();
 		} catch (e) {
@@ -44,6 +50,10 @@
 		label={status || 'Drop files here or click to browse'}
 		onfiles={handleFiles}
 	/>
+	<label class="flex items-center gap-2 text-sm text-muted-foreground">
+		<input type="checkbox" bind:checked={requireSignIn} disabled={uploading} />
+		Require sign-in to download
+	</label>
 	{#if error}
 		<p class="text-sm text-destructive">{error}</p>
 	{/if}

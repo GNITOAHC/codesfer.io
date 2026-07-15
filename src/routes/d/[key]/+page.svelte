@@ -4,7 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Terminal as TerminalIcon, Download, Lock } from '@lucide/svelte';
 	import { resolve } from '$app/paths';
-	import { publicDownloadUrl } from '$lib/api';
+	import { publicDownloadUrl, downloadHref } from '$lib/api';
 
 	let { data } = $props();
 
@@ -12,9 +12,18 @@
 	const description = $derived(
 		data.info
 			? `Shared by ${data.info.owner} via Codesfer`
-			: '🔒 Password protected · Shared via Codesfer'
+			: data.gate === 'auth'
+				? '🔒 Sign-in required · Shared via Codesfer'
+				: '🔒 Password protected · Shared via Codesfer'
 	);
 	const tree = $derived((data.info?.metadata?.tree as string[] | undefined) ?? []);
+	// Gated files must go through the same-origin /api proxy, which turns the
+	// httpOnly session cookie into the Authorization header. Public files keep
+	// the direct API link (no proxy hop).
+	const gated = $derived(data.info != null && data.info.access_scope !== 'public');
+	const downloadUrl = $derived(
+		gated ? downloadHref(data.key, data.password) : publicDownloadUrl(data.key, data.password)
+	);
 
 	function formatDate(unixSeconds: number): string {
 		return new Date(unixSeconds * 1000).toLocaleString();
@@ -47,6 +56,9 @@
 						{#if data.info.protected}
 							<Badge variant="secondary">protected</Badge>
 						{/if}
+						{#if gated}
+							<Badge variant="secondary">sign-in required</Badge>
+						{/if}
 					</Card.Title>
 					<Card.Description>
 						Shared by {data.info.owner} · {formatDate(data.info.created_at)}
@@ -62,10 +74,23 @@
 							{/each}
 						</ul>
 					{/if}
-					<Button href={publicDownloadUrl(data.key, data.password)} class="gap-2">
+					<Button href={downloadUrl} class="gap-2">
 						<Download class="h-4 w-4" />
 						Download
 					</Button>
+				</Card.Content>
+			{:else if data.gate === 'auth'}
+				<Card.Header>
+					<Card.Title class="flex items-center gap-2">
+						<Lock class="h-4 w-4" />
+						Sign-in required
+					</Card.Title>
+					<Card.Description>
+						Sign in to your Codesfer account to download this file.
+					</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<Button href={resolve('/dashboard')} class="w-full">Sign in</Button>
 				</Card.Content>
 			{:else}
 				<Card.Header>

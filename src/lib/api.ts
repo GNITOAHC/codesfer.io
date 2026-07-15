@@ -48,12 +48,15 @@ export interface StoredObject {
 	meta?: Record<string, string>;
 }
 
+export type AccessScope = 'owner' | 'authenticated' | 'public';
+
 export interface ObjectInfo {
 	key: string;
 	owner: string;
 	path: string;
 	created_at: number;
 	protected: boolean;
+	access_scope: AccessScope;
 	metadata?: Record<string, unknown>;
 }
 
@@ -111,9 +114,10 @@ function generateUploadId(): string {
 	return [...bytes].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-function setPushFields(form: FormData, path: string, password: string, meta: string) {
+function setPushFields(form: FormData, path: string, password: string, meta: string, access: AccessScope) {
 	if (path) form.set('path', path);
 	if (password) form.set('password', password);
+	if (access !== 'public') form.set('access', access);
 	form.set('meta', meta);
 }
 
@@ -123,7 +127,8 @@ function setPushFields(form: FormData, path: string, password: string, meta: str
 export async function uploadFile(
 	file: File,
 	password = '',
-	onProgress?: (done: number, total: number) => void
+	onProgress?: (done: number, total: number) => void,
+	access: AccessScope = 'public'
 ): Promise<UploadResult> {
 	const path = sanitizePath(file.name);
 	const meta = JSON.stringify({ tree: [file.name] });
@@ -132,7 +137,7 @@ export async function uploadFile(
 	if (zip.size <= CHUNK_SIZE) {
 		const form = new FormData();
 		form.set('file', zip, `${path || 'upload'}.zip`);
-		setPushFields(form, path, password, meta);
+		setPushFields(form, path, password, meta, access);
 		onProgress?.(0, 1);
 		const res = await request('/storage/upload', { method: 'POST', body: form });
 		onProgress?.(1, 1);
@@ -148,7 +153,7 @@ export async function uploadFile(
 		form.set('chunk_index', String(i));
 		form.set('total_chunks', String(totalChunks));
 		form.set('file', zip.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE), `chunk_${i}`);
-		setPushFields(form, path, password, meta);
+		setPushFields(form, path, password, meta, access);
 		res = await request('/storage/upload/chunk', { method: 'POST', body: form });
 		onProgress?.(i + 1, totalChunks);
 	}
