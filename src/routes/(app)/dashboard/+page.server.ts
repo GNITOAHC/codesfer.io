@@ -46,6 +46,9 @@ export const actions: Actions = {
 
 		const res = await fetch(`${API_BASE}/auth/login`, {
 			method: 'POST',
+			// Workers subrequests drop the User-Agent; the Go server reads this
+			// header as a fallback to record the session's agent.
+			headers: { 'X-Forwarded-User-Agent': request.headers.get('user-agent') ?? '' },
 			body: JSON.stringify({ email, password })
 		});
 		if (!res.ok) {
