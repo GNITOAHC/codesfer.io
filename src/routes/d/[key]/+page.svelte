@@ -5,7 +5,7 @@
 	import { Terminal as TerminalIcon, Download, Lock } from '@lucide/svelte';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { publicDownloadUrl, downloadHref } from '$lib/api';
+	import { canDownloadAnonymously, objectDownloadUrl } from '$lib/api';
 
 	let { data } = $props();
 
@@ -18,16 +18,13 @@
 				: '🔒 Password protected · Shared via Codesfer'
 	);
 	const tree = $derived((data.info?.metadata?.tree as string[] | undefined) ?? []);
-	// Gated files must go through the same-origin /api proxy, which turns the
-	// httpOnly session cookie into the Authorization header. Public files keep
-	// the direct API link (no proxy hop).
-	const gated = $derived(data.info != null && data.info.access_scope !== 'public');
 	const downloadUrl = $derived(
-		gated ? downloadHref(data.key, data.password) : publicDownloadUrl(data.key, data.password)
+		data.info ? objectDownloadUrl(data.info, data.key, data.password) : ''
 	);
 	// This page redirects CLI user-agents straight to the archive (see
-	// +page.server.ts), so the share link doubles as a curl target. Only for
-	// public files — curl carries no session, so gated ones would 401.
+	// +page.server.ts), so the share link doubles as a curl target — but only
+	// when the object needs no session, since curl carries none.
+	const curlable = $derived(data.info != null && canDownloadAnonymously(data.info, data.password));
 	const curlCommand = $derived(
 		`curl -OJL ${page.url.origin}/d/${data.key}` +
 			(data.password ? `?password=${encodeURIComponent(data.password)}` : '')
@@ -64,8 +61,10 @@
 						{#if data.info.protected}
 							<Badge variant="secondary">protected</Badge>
 						{/if}
-						{#if gated}
-							<Badge variant="secondary">sign-in required</Badge>
+						{#if data.info.access_scope !== 'public'}
+							<Badge variant="secondary">
+								{data.info.access_scope === 'owner' ? 'private' : 'sign-in required'}
+							</Badge>
 						{/if}
 					</Card.Title>
 					<Card.Description>
@@ -86,7 +85,7 @@
 						<Download class="h-4 w-4" />
 						Download
 					</Button>
-					{#if !gated}
+					{#if curlable}
 						<p class="text-xs text-muted-foreground">
 							Or from your terminal:
 							<code

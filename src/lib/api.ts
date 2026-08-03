@@ -96,6 +96,25 @@ export function publicDownloadUrl(key: string, password = ''): string {
 	return `${API_BASE}/download/${encodeURIComponent(key)}.zip${suffix}`;
 }
 
+// Access is two independent gates: `access_scope` (who) and `protected` (what
+// they must know). The Go server's public /download route runs without the
+// auth middleware, so it judges every caller as anonymous — a link to it only
+// works when neither gate needs a session: public scope, and the password
+// either absent or in hand. Notably an owner passes /storage/info by bypass
+// but is still anonymous to /download, which is what made the button 401.
+export function canDownloadAnonymously(info: ObjectInfo, password = ''): boolean {
+	return info.access_scope === 'public' && (!info.protected || password !== '');
+}
+
+// The one download link for the share page: direct when the object is
+// anonymously reachable, otherwise through the /api proxy, which turns the
+// httpOnly session cookie into the Authorization header the Go server needs.
+export function objectDownloadUrl(info: ObjectInfo, key: string, password = ''): string {
+	return canDownloadAnonymously(info, password)
+		? publicDownloadUrl(key, password)
+		: downloadHref(key, password);
+}
+
 export interface UploadResult {
 	uid: string;
 	path: string;
