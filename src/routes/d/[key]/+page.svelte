@@ -4,6 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Terminal as TerminalIcon, Download, Lock } from '@lucide/svelte';
 	import { resolve } from '$app/paths';
+	import { page } from '$app/state';
 	import { publicDownloadUrl, downloadHref } from '$lib/api';
 
 	let { data } = $props();
@@ -23,6 +24,13 @@
 	const gated = $derived(data.info != null && data.info.access_scope !== 'public');
 	const downloadUrl = $derived(
 		gated ? downloadHref(data.key, data.password) : publicDownloadUrl(data.key, data.password)
+	);
+	// This page redirects CLI user-agents straight to the archive (see
+	// +page.server.ts), so the share link doubles as a curl target. Only for
+	// public files — curl carries no session, so gated ones would 401.
+	const curlCommand = $derived(
+		`curl -OJL ${page.url.origin}/d/${data.key}` +
+			(data.password ? `?password=${encodeURIComponent(data.password)}` : '')
 	);
 
 	function formatDate(unixSeconds: number): string {
@@ -78,6 +86,15 @@
 						<Download class="h-4 w-4" />
 						Download
 					</Button>
+					{#if !gated}
+						<p class="text-xs text-muted-foreground">
+							Or from your terminal:
+							<code
+								class="mt-1 block overflow-x-auto rounded-md border border-border px-2 py-1.5 font-mono"
+								>{curlCommand}</code
+							>
+						</p>
+					{/if}
 				</Card.Content>
 			{:else if data.gate === 'auth'}
 				<Card.Header>
