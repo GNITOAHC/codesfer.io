@@ -14,6 +14,19 @@
 	// One copy, used by both the SERP tags and the social card tags.
 	const title = 'Documentation - Codesfer';
 	const description = 'Learn how to install and use Codesfer CLI.';
+
+	// Two levels deep, so the trail is just home -> this page. Names match the
+	// visible nav labels. No TechArticle: the page carries no author and no
+	// maintained date, and filling those with placeholders is worse than omitting
+	// the type.
+	const breadcrumbs = {
+		'@context': 'https://schema.org',
+		'@type': 'BreadcrumbList',
+		itemListElement: [
+			{ '@type': 'ListItem', position: 1, name: 'Codesfer', item: 'https://codesfer.io/' },
+			{ '@type': 'ListItem', position: 2, name: 'Documentation', item: 'https://codesfer.io/docs' }
+		]
+	};
 </script>
 
 <svelte:head>
@@ -21,6 +34,8 @@
 	<meta name="description" content={description} />
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={description} />
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -- static constant above, no user input -->
+	{@html `<script type="application/ld+json">${JSON.stringify(breadcrumbs)}<\/script>`}
 </svelte:head>
 
 <!-- Hero Section -->

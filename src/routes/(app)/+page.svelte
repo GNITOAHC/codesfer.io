@@ -10,6 +10,25 @@
 	const title = 'Codesfer - Share code snippets securely from your terminal';
 	const description =
 		'A CLI tool and self-hostable server for sending and receiving code with optional encryption.';
+
+	// Every property here must be checkable against what a human sees on the site:
+	// the operating systems come from the install tabs on /docs, the repository is
+	// linked from the nav and the footer. Structured data asserting more than the
+	// page supports is a manual-action risk.
+	//
+	// No `offers` block. The plan called for one with a zero price, but no public
+	// page states that the tool is free, so the claim would not be verifiable from
+	// the page — see fix-plan/plan-07.report.md.
+	const softwareApplication = {
+		'@context': 'https://schema.org',
+		'@type': 'SoftwareApplication',
+		name: 'Codesfer',
+		description,
+		applicationCategory: 'DeveloperApplication',
+		operatingSystem: 'macOS, Linux, Windows',
+		url: 'https://codesfer.io/',
+		sameAs: 'https://github.com/GNITOAHC/codesfer'
+	};
 </script>
 
 <svelte:head>
@@ -17,6 +36,8 @@
 	<meta name="description" content={description} />
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={description} />
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -- static constant above, no user input -->
+	{@html `<script type="application/ld+json">${JSON.stringify(softwareApplication)}<\/script>`}
 </svelte:head>
 
 <!-- Hero Section -->
