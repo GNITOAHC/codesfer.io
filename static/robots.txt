@@ -8,4 +8,18 @@ Disallow:
 # indexed bare from an external link. Disallow and noindex defeat each other;
 # noindex alone is what actually keeps a page out of the index.
 
+# AI crawlers are allowed deliberately, not by oversight. For a free,
+# self-hostable developer tool, being cited by ChatGPT, Perplexity, Claude and
+# AI Overviews is distribution, not leakage. Treat any future rule that blocks
+# GPTBot, ClaudeBot, PerplexityBot or Google-Extended as a reversal of that
+# decision and weigh it against the traffic it gives up.
+#
+# Facts worth having before making that change:
+#   - Blocking Google-Extended stops Gemini training use. It does NOT affect
+#     Google Search indexing or AI Overviews, which both use Googlebot.
+#   - Blocking GPTBot stops OpenAI training use. It does NOT stop ChatGPT
+#     citing the site via its browsing agent, which is a different token.
+#   - Some user-triggered agents ignore robots.txt by design. Blocking those
+#     needs server-side access control, not a rule in this file.
+
 Sitemap: https://codesfer.io/sitemap.xml
