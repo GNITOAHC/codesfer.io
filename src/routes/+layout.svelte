@@ -13,6 +13,8 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 	<link rel="canonical" href={canonical} />
+	<!-- Same value as the canonical, by construction: the two must never drift. -->
+	<meta property="og:url" content={canonical} />
 </svelte:head>
 
 <main class="flex flex-1 flex-col">

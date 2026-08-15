@@ -9,11 +9,17 @@
 	} from '$lib/components/ui/card';
 	import { Terminal } from '$lib/components/terminal';
 	import { Server, Database, Cloud, Key, CodeXml, Workflow } from '@lucide/svelte';
+
+	// One copy, used by both the SERP tags and the social card tags.
+	const title = 'Self-Hosting - Codesfer';
+	const description = 'Learn how to self-host your own Codesfer server.';
 </script>
 
 <svelte:head>
-	<title>Self-Hosting - Codesfer</title>
-	<meta name="description" content="Learn how to self-host your own Codesfer server." />
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
 </svelte:head>
 
 <!-- Hero Section -->

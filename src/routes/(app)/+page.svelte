@@ -4,14 +4,19 @@
 	import { Terminal } from '$lib/components/terminal';
 	import { Lock, Database, Monitor, Eye, Download, ArrowRight } from '@lucide/svelte';
 	import { resolve } from '$app/paths';
+
+	// Declared once and used by both the SERP tags and the social card tags. A
+	// divergence between the two is a maintenance trap, so there is only one copy.
+	const title = 'Codesfer - Share code snippets securely from your terminal';
+	const description =
+		'A CLI tool and self-hostable server for sending and receiving code with optional encryption.';
 </script>
 
 <svelte:head>
-	<title>Codesfer - Share code snippets securely from your terminal</title>
-	<meta
-		name="description"
-		content="A CLI tool and self-hostable server for sending and receiving code with optional encryption."
-	/>
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
 </svelte:head>
 
 <!-- Hero Section -->

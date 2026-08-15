@@ -10,11 +10,17 @@
 	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
 	// prettier-ignore
 	import { Download, UserPlus, LogIn, LogOut, Upload, FolderDown, List, Trash2, BookOpen, Shield, Terminal as TerminalIcon } from '@lucide/svelte';
+
+	// One copy, used by both the SERP tags and the social card tags.
+	const title = 'Documentation - Codesfer';
+	const description = 'Learn how to install and use Codesfer CLI.';
 </script>
 
 <svelte:head>
-	<title>Documentation - Codesfer</title>
-	<meta name="description" content="Learn how to install and use Codesfer CLI." />
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
 </svelte:head>
 
 <!-- Hero Section -->
