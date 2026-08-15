@@ -1,3 +1,7 @@
 # allow crawling everything by default
 User-agent: *
-Disallow:
+Disallow: /dashboard
+
+# /d/<key> share pages are intentionally NOT disallowed here. They carry a
+# `noindex` meta tag instead — a disallowed URL is never fetched, so the tag
+# would never be read and the URL could still be indexed bare.

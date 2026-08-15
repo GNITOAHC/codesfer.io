@@ -36,6 +36,9 @@
 
 <svelte:head>
 	<title>Dashboard - Codesfer</title>
+	<!-- Second layer behind the robots.txt disallow, in case the URL is
+	     discovered from an external link. -->
+	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 {#if !data.account}
