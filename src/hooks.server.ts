@@ -2,9 +2,8 @@ import type { Handle } from '@sveltejs/kit';
 
 // Static and prerendered responses get these from the _headers file at the
 // project root, applied by Cloudflare's assets layer. That layer never sees
-// server-rendered responses
-// (/d/<key>, /dashboard, the API proxy), so they are set again here. Keep the
-// two lists identical.
+// server-rendered responses (/d/<key>, /dashboard, the API proxy), so they are
+// set again here. Keep the two lists identical.
 //
 // Referrer-Policy is the one that carries real weight: without it, clicking an
 // outbound link from a share page sends the full /d/<key> URL — which contains
