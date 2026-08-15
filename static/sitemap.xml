@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Hand-maintained. Three public pages does not justify a generator or a build step.
+  Hand-maintained. Three public pages do not justify a generator or a build step.
   Add a route here when a new public page ships.
 
   URLs must match the canonical tags in src/routes/+layout.svelte exactly: apex host,

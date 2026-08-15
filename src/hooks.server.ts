@@ -1,7 +1,8 @@
 import type { Handle } from '@sveltejs/kit';
 
-// Static and prerendered responses get these from static/_headers, applied by
-// Cloudflare's assets layer. That layer never sees server-rendered responses
+// Static and prerendered responses get these from the _headers file at the
+// project root, applied by Cloudflare's assets layer. That layer never sees
+// server-rendered responses
 // (/d/<key>, /dashboard, the API proxy), so they are set again here. Keep the
 // two lists identical.
 //
