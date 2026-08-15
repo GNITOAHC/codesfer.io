@@ -17,3 +17,9 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY
+
+# Self-hosted fonts. Unlike /_app/* these filenames carry no content hash, so
+# immutable caching is only safe because the files never change in place — to
+# update a face, change the filename in src/routes/layout.css too.
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
