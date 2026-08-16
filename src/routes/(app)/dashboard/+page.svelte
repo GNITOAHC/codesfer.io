@@ -36,6 +36,10 @@
 
 <svelte:head>
 	<title>Dashboard - Codesfer</title>
+	<!-- Deliberately NOT disallowed in robots.txt: a disallowed URL is never
+	     fetched, so this tag would never be read and the page could still be
+	     indexed bare from an external link. -->
+	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 {#if !data.account}

@@ -1,0 +1,28 @@
+# Codesfer
+
+> A CLI tool and self-hostable server for sending and receiving code with optional encryption.
+
+Codesfer pushes files or directories from a terminal and returns a share link. Archives can
+be password-protected, restricted to the owner, or left public. The server is a single Go
+binary and can be run on your own infrastructure.
+
+## Pages
+
+- [Codesfer](https://codesfer.io/): What the tool does, and where to download a binary.
+- [Documentation](https://codesfer.io/docs): Installing the CLI on macOS, Linux, or Windows,
+  and the push, pull, list, and remove commands.
+- [Self-Hosting](https://codesfer.io/self-hosting): Running your own Codesfer server, its
+  storage backends, and configuration.
+
+## Source
+
+- [github.com/GNITOAHC/codesfer](https://github.com/GNITOAHC/codesfer): Server and CLI source.
+
+## Notes
+
+Share links under /d/ are not listed here and must not be crawled or cited — each one is a
+secret key granting access to someone's uploaded files. They carry a noindex directive.
+
+Keep the three page URLs above identical to static/sitemap.xml and to the canonical tags in
+src/routes/+layout.svelte. Pointing agents at URLs that later 404 is worse than having no
+file at all.

@@ -37,9 +37,15 @@
 
 <svelte:head>
 	<title>{title} - Codesfer</title>
+	<!-- Share links leak the filename in the og: tags below, so they must never
+	     be indexed. Deliberately NOT disallowed in robots.txt: a disallowed URL
+	     is never fetched, so this tag would never be read. -->
+	<meta name="robots" content="noindex, nofollow" />
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={description} />
-	<meta property="og:type" content="website" />
+	<!-- og:type is set site-wide in src/app.html with this same value; a second
+	     identical tag here was redundant. The filename-based title and
+	     description above are the share unfurl and stay untouched. -->
 </svelte:head>
 
 <div class="flex min-h-screen flex-col">

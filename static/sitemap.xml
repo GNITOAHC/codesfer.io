@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Hand-maintained. Three public pages do not justify a generator or a build step.
+  Add a route here when a new public page ships.
+
+  URLs must match the canonical tags in src/routes/+layout.svelte exactly: apex host,
+  https, no trailing slash on sub-pages. A mismatch shows up in Search Console as
+  submitted-but-not-selected-canonical.
+
+  Never list share or dashboard routes: both are noindex. Their paths are kept out
+  of this comment so a grep for them against the served file stays a real check.
+  No lastmod: it would go stale by hand, and a wrong date is worse than none.
+  No changefreq or priority: Google ignores both.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+	<url>
+		<loc>https://codesfer.io/</loc>
+	</url>
+	<url>
+		<loc>https://codesfer.io/docs</loc>
+	</url>
+	<url>
+		<loc>https://codesfer.io/self-hosting</loc>
+	</url>
+</urlset>
