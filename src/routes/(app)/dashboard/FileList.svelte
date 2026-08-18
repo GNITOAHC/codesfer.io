@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
-	import { Copy, Download, Trash2 } from '@lucide/svelte';
+	import { Check, Copy, Download, Trash2 } from '@lucide/svelte';
 	import { downloadHref, sharePath, type StoredObject } from '$lib/api';
 
 	interface Props {
@@ -11,8 +11,14 @@
 
 	let { objects, onremove }: Props = $props();
 
-	function copyLink(key: string) {
-		navigator.clipboard.writeText(new URL(sharePath(key), location.href).href);
+	let copiedKey = $state('');
+	let copiedTimer: ReturnType<typeof setTimeout>;
+
+	async function copyLink(key: string) {
+		await navigator.clipboard.writeText(new URL(sharePath(key), location.href).href);
+		copiedKey = key;
+		clearTimeout(copiedTimer);
+		copiedTimer = setTimeout(() => (copiedKey = ''), 2000);
 	}
 
 	function formatDate(unixSeconds: number): string {
@@ -65,10 +71,17 @@
 									variant="ghost"
 									size="sm"
 									onclick={() => copyLink(obj.key ?? '')}
-									aria-label="Copy share link"
+									aria-label={copiedKey === obj.key ? 'Link copied' : 'Copy share link'}
 								>
-									<Copy class="h-4 w-4" />
+									{#if copiedKey === obj.key}
+										<Check class="h-4 w-4 text-green-600" />
+									{:else}
+										<Copy class="h-4 w-4" />
+									{/if}
 								</Button>
+								<span class="sr-only" aria-live="polite">
+									{copiedKey === obj.key ? 'Link copied to clipboard' : ''}
+								</span>
 								<Button
 									variant="ghost"
 									size="sm"
