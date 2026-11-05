@@ -118,6 +118,7 @@ export function objectDownloadUrl(info: ObjectInfo, key: string, password = ''):
 export interface UploadResult {
 	uid: string;
 	path: string;
+	expires_at?: number;
 }
 
 // Mirrors internal/cli.sanitizePath: paths may only contain A-Z a-z 0-9 _ - /
@@ -147,18 +148,38 @@ function setPushFields(
 	form.set('meta', meta);
 }
 
-// Mirrors `codesfer push <file>`: wrap the file in a zip archive (the server
-// stores and serves zips), derive the object path from the sanitized filename,
-// and attach the file-tree metadata used by /storage/info.
-export async function uploadFile(
-	file: File,
+function isZip(file: File): boolean {
+	return file.name.toLowerCase().endsWith('.zip');
+}
+
+// Mirrors `codesfer push <files...>`: bundle every file into one zip archive
+// (the server stores and serves zips), derive the object path from the
+// sanitized filename, and attach the file-tree metadata used by
+// /storage/info. A lone .zip is sent as-is instead of being zipped again.
+async function bundle(files: File[]): Promise<{ zip: Blob; path: string; meta: string }> {
+	const meta = JSON.stringify({ tree: files.map((f) => f.name) });
+	if (files.length === 1 && isZip(files[0])) {
+		const base = files[0].name.split('/').pop()!;
+		return { zip: files[0], path: sanitizePath(base.slice(0, -4)), meta };
+	}
+	// ponytail: duplicate names across drops aren't deduped; the zip keeps both entries.
+	const zip = await createZip(
+		files.map((f) => ({ name: f.name, data: f, lastModified: f.lastModified }))
+	);
+	// Like the CLI: a single file or folder names the object, several fall back
+	// to a generic name. Files from a dropped folder are named "folder/...".
+	const roots = new Set(files.map((f) => f.name.split('/')[0]));
+	const path = roots.size === 1 ? sanitizePath([...roots][0]) : 'upload';
+	return { zip, path, meta };
+}
+
+export async function uploadFiles(
+	files: File[],
 	password = '',
 	onProgress?: (done: number, total: number) => void,
 	access: AccessScope = 'public'
 ): Promise<UploadResult> {
-	const path = sanitizePath(file.name);
-	const meta = JSON.stringify({ tree: [file.name] });
-	const zip = await createZip([{ name: file.name, data: file, lastModified: file.lastModified }]);
+	const { zip, path, meta } = await bundle(files);
 
 	if (zip.size <= CHUNK_SIZE) {
 		const form = new FormData();
@@ -184,4 +205,21 @@ export async function uploadFile(
 		onProgress?.(i + 1, totalChunks);
 	}
 	return res!.json();
+}
+
+// Anonymous upload (see anon_upload_guide.md in the server repo): posted
+// straight to the Go server, bypassing the /api proxy, so no session is ever
+// attached and the server's per-IP rate limit sees the visitor's real IP.
+// Always public, 7-day expiry, single request only (no chunking without login).
+export async function uploadAnonymous(files: File[]): Promise<UploadResult> {
+	const { zip, path, meta } = await bundle(files);
+	if (zip.size > CHUNK_SIZE) {
+		throw new Error('Anonymous uploads are limited to 90 MB; sign in for larger uploads');
+	}
+	const form = new FormData();
+	form.set('file', zip, `${path || 'upload'}.zip`);
+	setPushFields(form, path, '', meta, 'public');
+	const res = await fetch(`${API_BASE}/storage/upload`, { method: 'POST', body: form });
+	if (!res.ok) throw new Error((await res.text()) || res.statusText);
+	return res.json();
 }

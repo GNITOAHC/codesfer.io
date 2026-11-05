@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Hand-maintained. Three public pages do not justify a generator or a build step.
+  Hand-maintained. A handful of public pages do not justify a generator or a build step.
   Add a route here when a new public page ships.
 
   URLs must match the canonical tags in src/routes/+layout.svelte exactly: apex host,
@@ -21,5 +21,8 @@
 	</url>
 	<url>
 		<loc>https://codesfer.io/self-hosting</loc>
+	</url>
+	<url>
+		<loc>https://codesfer.io/upload</loc>
 	</url>
 </urlset>

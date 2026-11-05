@@ -1,38 +1,52 @@
 <script lang="ts">
 	import { DropZone } from '$lib/components/dropzone';
-	import { uploadFile } from '$lib/api';
+	import { Button } from '$lib/components/ui/button';
+	import { X } from '@lucide/svelte';
+	import { uploadAnonymous, uploadFiles, type UploadResult } from '$lib/api';
 
 	interface Props {
-		onuploaded: () => void;
+		onuploaded: (result: UploadResult) => void;
+		// Fast upload page: no session, always public, expires after 7 days.
+		anonymous?: boolean;
 	}
 
-	let { onuploaded }: Props = $props();
+	let { onuploaded, anonymous = false }: Props = $props();
 
+	let pending = $state<File[]>([]);
 	let uploading = $state(false);
 	let status = $state('');
 	let error = $state('');
 	let requireSignIn = $state(false);
 
-	async function handleFiles(files: File[]) {
+	function formatSize(bytes: number): string {
+		if (bytes < 1024) return `${bytes} B`;
+		const units = ['KB', 'MB', 'GB'];
+		let i = -1;
+		do {
+			bytes /= 1024;
+			i++;
+		} while (bytes >= 1024 && i < units.length - 1);
+		return `${bytes.toFixed(1)} ${units[i]}`;
+	}
+
+	async function upload() {
 		uploading = true;
 		error = '';
+		const lonePassthrough = pending.length === 1 && pending[0].name.toLowerCase().endsWith('.zip');
+		status = lonePassthrough ? 'Uploading...' : 'Compressing...';
 		try {
-			for (const [idx, file] of files.entries()) {
-				const prefix = files.length > 1 ? `(${idx + 1}/${files.length}) ` : '';
-				status = `${prefix}Compressing ${file.name}...`;
-				await uploadFile(
-					file,
-					'',
-					(done, total) => {
-						status =
-							total > 1
-								? `${prefix}Uploading ${file.name}... chunk ${done}/${total}`
-								: `${prefix}Uploading ${file.name}...`;
-					},
-					requireSignIn ? 'authenticated' : 'public'
-				);
-			}
-			onuploaded();
+			const result = anonymous
+				? await uploadAnonymous(pending)
+				: await uploadFiles(
+						pending,
+						'',
+						(done, total) => {
+							status = total > 1 ? `Uploading... chunk ${done}/${total}` : 'Uploading...';
+						},
+						requireSignIn ? 'authenticated' : 'public'
+					);
+			pending = [];
+			onuploaded(result);
 		} catch (e) {
 			error = e instanceof Error ? e.message : String(e);
 		} finally {
@@ -48,12 +62,42 @@
 		multiple
 		disabled={uploading}
 		label={status || 'Drop files here or click to browse'}
-		onfiles={handleFiles}
+		onfiles={(files) => (pending = [...pending, ...files])}
 	/>
-	<label class="flex items-center gap-2 text-sm text-muted-foreground">
-		<input type="checkbox" bind:checked={requireSignIn} disabled={uploading} />
-		Require sign-in to download
-	</label>
+	{#if pending.length > 0}
+		<ul class="flex flex-col rounded-md border border-border text-sm">
+			{#each pending as file, i (i)}
+				<li class="flex items-center gap-2 border-b border-border px-3 py-1.5 last:border-b-0">
+					<span class="flex-1 truncate">{file.name}</span>
+					<span class="text-muted-foreground">{formatSize(file.size)}</span>
+					<Button
+						variant="ghost"
+						size="sm"
+						disabled={uploading}
+						onclick={() => pending.splice(i, 1)}
+						aria-label="Remove {file.name}"
+					>
+						<X class="h-4 w-4" />
+					</Button>
+				</li>
+			{/each}
+		</ul>
+	{/if}
+	<div class="flex flex-wrap items-center justify-between gap-3">
+		{#if anonymous}
+			<p class="text-sm text-muted-foreground">
+				Public link, expires in 7 days, 90 MB max. Files are zipped together.
+			</p>
+		{:else}
+			<label class="flex items-center gap-2 text-sm text-muted-foreground">
+				<input type="checkbox" bind:checked={requireSignIn} disabled={uploading} />
+				Require sign-in to download
+			</label>
+		{/if}
+		<Button size="sm" disabled={uploading || pending.length === 0} onclick={upload}>
+			{uploading ? 'Uploading...' : 'Upload'}
+		</Button>
+	</div>
 	{#if error}
 		<p class="text-sm text-destructive">{error}</p>
 	{/if}

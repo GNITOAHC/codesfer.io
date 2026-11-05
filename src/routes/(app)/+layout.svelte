@@ -6,6 +6,7 @@
 		Server,
 		Github,
 		LayoutDashboard,
+		Zap,
 		Menu,
 		X,
 		Sun,
@@ -59,6 +60,15 @@
 				<Button variant="ghost" size="sm" href={resolve('/dashboard')} class="gap-2">
 					<LayoutDashboard class="h-4 w-4" />
 					Dashboard
+				</Button>
+				<Button
+					variant={page.url.pathname.startsWith(resolve('/upload')) ? 'secondary' : 'ghost'}
+					size="sm"
+					href={resolve('/upload')}
+					class="gap-2"
+				>
+					<Zap class="h-4 w-4" />
+					Fast Upload
 				</Button>
 				<Button variant="ghost" size="sm" onclick={() => theme.toggle()} aria-label="Toggle theme">
 					{#if $theme === 'dark'}
@@ -119,6 +129,15 @@
 					>
 						<LayoutDashboard class="h-4 w-4" />
 						Dashboard
+					</Button>
+					<Button
+						variant={page.url.pathname.startsWith(resolve('/upload')) ? 'secondary' : 'ghost'}
+						href={resolve('/upload')}
+						class="w-full justify-start gap-2"
+						onclick={() => (mobileMenuOpen = false)}
+					>
+						<Zap class="h-4 w-4" />
+						Fast Upload
 					</Button>
 				</nav>
 			</div>
