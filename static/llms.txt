@@ -10,9 +10,13 @@ binary and can be run on your own infrastructure.
 
 - [Codesfer](https://codesfer.io/): What the tool does, and where to download a binary.
 - [Documentation](https://codesfer.io/docs): Installing the CLI on macOS, Linux, or Windows,
-  and the push, pull, list, and remove commands.
+  and the push, pull, list, remove, and url commands.
 - [Self-Hosting](https://codesfer.io/self-hosting): Running your own Codesfer server, its
   storage backends, and configuration.
+- [Fast Upload](https://codesfer.io/upload): Share files without an account; links expire in
+  7 days.
+- [Shorten a Link](https://codesfer.io/shorten): Shorten a URL without an account; short links
+  expire in 7 days.
 
 ## Source
 
@@ -23,6 +27,6 @@ binary and can be run on your own infrastructure.
 Share links under /d/ are not listed here and must not be crawled or cited — each one is a
 secret key granting access to someone's uploaded files. They carry a noindex directive.
 
-Keep the three page URLs above identical to static/sitemap.xml and to the canonical tags in
+Keep the page URLs above identical to static/sitemap.xml and to the canonical tags in
 src/routes/+layout.svelte. Pointing agents at URLs that later 404 is worse than having no
 file at all.

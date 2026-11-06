@@ -65,8 +65,21 @@ export interface ObjectInfo {
 // the Authorization header from the httpOnly session cookie.
 async function request(path: string, init: RequestInit = {}): Promise<Response> {
 	const res = await fetch(`/api${path}`, init);
-	if (!res.ok) throw new Error((await res.text()) || res.statusText);
+	if (!res.ok) throw await responseError(res);
 	return res;
+}
+
+// The Go server replies {"error": "..."} (internal/server/reply); fall back
+// to the raw body for proxy errors and anything else.
+async function responseError(res: Response): Promise<Error> {
+	const text = await res.text();
+	try {
+		const msg = JSON.parse(text).error;
+		if (typeof msg === 'string' && msg) return new Error(msg);
+	} catch {
+		// not JSON
+	}
+	return new Error(text || res.statusText);
 }
 
 export async function removeObject(key: string): Promise<void> {
@@ -220,6 +233,44 @@ export async function uploadAnonymous(files: File[]): Promise<UploadResult> {
 	form.set('file', zip, `${path || 'upload'}.zip`);
 	setPushFields(form, path, '', meta, 'public');
 	const res = await fetch(`${API_BASE}/storage/upload`, { method: 'POST', body: form });
-	if (!res.ok) throw new Error((await res.text()) || res.statusText);
+	if (!res.ok) throw await responseError(res);
 	return res.json();
+}
+
+// Mirrors api.ShortURLResponse. `url` is {LINK_BASE_URL}/r/<handle>;
+// redirects are served by the Go server on that host, not by this site.
+export interface ShortURL {
+	handle: string;
+	url: string;
+	custom_url?: string;
+	target: string;
+	password?: string; // only sent to the owner
+	protected: boolean;
+	created_at: number;
+	expires_at?: number; // set for anonymous links
+}
+
+export async function createShortURL(
+	target: string,
+	custom = '',
+	password = ''
+): Promise<ShortURL> {
+	const body = new URLSearchParams({ target, custom, password });
+	const res = await request('/url/new', { method: 'POST', body });
+	return res.json();
+}
+
+// Like uploadAnonymous: straight to the Go server so no session is attached
+// and the per-IP rate limit sees the visitor's IP. Expires after 7 days.
+export async function createShortURLAnonymous(target: string): Promise<ShortURL> {
+	const res = await fetch(`${API_BASE}/url/new`, {
+		method: 'POST',
+		body: new URLSearchParams({ target })
+	});
+	if (!res.ok) throw await responseError(res);
+	return res.json();
+}
+
+export async function removeShortURL(handle: string): Promise<void> {
+	await request(`/url/remove?key=${encodeURIComponent(handle)}`, { method: 'DELETE' });
 }

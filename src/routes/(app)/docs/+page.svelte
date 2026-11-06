@@ -9,7 +9,7 @@
 	} from '$lib/components/ui/card';
 	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
 	// prettier-ignore
-	import { Download, UserPlus, LogIn, LogOut, Upload, FolderDown, List, Trash2, BookOpen, Shield, Terminal as TerminalIcon } from '@lucide/svelte';
+	import { Download, UserPlus, LogIn, LogOut, Upload, FolderDown, List, Trash2, BookOpen, Shield, Link, Info, Terminal as TerminalIcon } from '@lucide/svelte';
 
 	// One copy, used by both the SERP tags and the social card tags.
 	const title = 'Documentation - Codesfer';
@@ -318,6 +318,106 @@
 							<p class="mb-4 text-sm text-muted-foreground">Remove a snippet from the server.</p>
 							<code class="block rounded-lg border bg-muted/50 px-3 py-2 font-mono text-sm"
 								>codesfer remove &lt;code|alias&gt;</code
+							>
+						</CardContent>
+					</Card>
+				</div>
+			</div>
+		</section>
+
+		<!-- Short URLs Section -->
+		<section class="mb-20">
+			<div class="mb-8">
+				<h2 class="mb-3 flex items-center gap-3 text-3xl font-bold">
+					<div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+						<Link class="h-5 w-5 text-primary" />
+					</div>
+					Short URLs
+				</h2>
+				<p class="text-muted-foreground">
+					Shorten http(s) links. Without a login, links are anonymous and expire after 7 days; links
+					created while logged in last until you remove them.
+				</p>
+			</div>
+
+			<div class="space-y-6">
+				<Card class="border-2 transition-shadow hover:shadow-lg">
+					<CardHeader>
+						<CardTitle class="flex items-center gap-2">
+							<Link class="h-5 w-5 text-primary" />
+							New
+						</CardTitle>
+						<CardDescription>
+							Generates a short link, plus a custom one under your username when -c is given.
+						</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<div class="mb-6 overflow-x-auto rounded-lg border bg-muted/50 p-4">
+							<code class="font-mono text-sm">
+								codesfer url new &lt;long_url&gt; [-c custom_url] [-p password]
+							</code>
+						</div>
+						<div class="space-y-3 text-sm">
+							<div class="flex items-start gap-3">
+								<Badge variant="outline" class="font-mono">-c, --custom</Badge>
+								<span class="text-muted-foreground"
+									>Custom name, served at /u/&lt;username&gt;/&lt;custom_url&gt; (login required)</span
+								>
+							</div>
+							<div class="flex items-start gap-3">
+								<Badge variant="outline" class="font-mono">-p, --pass</Badge>
+								<span class="text-muted-foreground">Password to protect the short url</span>
+							</div>
+						</div>
+					</CardContent>
+				</Card>
+
+				<div class="grid gap-6 md:grid-cols-3">
+					<Card class="border-2 transition-shadow hover:shadow-lg">
+						<CardHeader>
+							<CardTitle class="flex items-center gap-2">
+								<List class="h-5 w-5 text-primary" />
+								List
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<p class="mb-4 text-sm text-muted-foreground">List all short urls created by you.</p>
+							<code class="block rounded-lg border bg-muted/50 px-3 py-2 font-mono text-sm"
+								>codesfer url list</code
+							>
+						</CardContent>
+					</Card>
+
+					<Card class="border-2 transition-shadow hover:shadow-lg">
+						<CardHeader>
+							<CardTitle class="flex items-center gap-2">
+								<Info class="h-5 w-5 text-primary" />
+								Get
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<p class="mb-4 text-sm text-muted-foreground">
+								Show a short url's target and metadata.
+							</p>
+							<code class="block rounded-lg border bg-muted/50 px-3 py-2 font-mono text-sm"
+								>codesfer url get &lt;handle&gt; [-p password]</code
+							>
+						</CardContent>
+					</Card>
+
+					<Card class="border-2 transition-shadow hover:shadow-lg">
+						<CardHeader>
+							<CardTitle class="flex items-center gap-2">
+								<Trash2 class="h-5 w-5 text-primary" />
+								Remove
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<p class="mb-4 text-sm text-muted-foreground">
+								Remove short urls you own. For a custom url, use username/custom_url.
+							</p>
+							<code class="block rounded-lg border bg-muted/50 px-3 py-2 font-mono text-sm"
+								>codesfer url remove &lt;handle&gt;</code
 							>
 						</CardContent>
 					</Card>

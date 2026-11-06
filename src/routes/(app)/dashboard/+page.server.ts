@@ -1,7 +1,7 @@
 import type { Actions, PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
-import { API_BASE, type Account, type StoredObject } from '$lib/api';
+import { API_BASE, type Account, type ShortURL, type StoredObject } from '$lib/api';
 
 export const prerender = false;
 
@@ -16,22 +16,25 @@ const COOKIE_OPTS = {
 
 export const load: PageServerLoad = async ({ cookies, fetch }) => {
 	const session = cookies.get(COOKIE);
-	if (!session) return { account: null, objects: [] as StoredObject[] };
+	if (!session) return { account: null, objects: [] as StoredObject[], links: [] as ShortURL[] };
 
 	const auth = { Authorization: `Bearer ${session}` };
-	const [meRes, listRes] = await Promise.all([
+	const [meRes, listRes, linksRes] = await Promise.all([
 		fetch(`${API_BASE}/auth/me?session_id=${encodeURIComponent(session)}`, { headers: auth }),
-		fetch(`${API_BASE}/storage/list`, { headers: auth })
+		fetch(`${API_BASE}/storage/list`, { headers: auth }),
+		fetch(`${API_BASE}/url/list`, { headers: auth }).catch(() => null)
 	]);
 
 	if (!meRes.ok || !listRes.ok) {
 		cookies.delete(COOKIE, { path: '/' });
-		return { account: null, objects: [] as StoredObject[] };
+		return { account: null, objects: [] as StoredObject[], links: [] as ShortURL[] };
 	}
 
 	return {
 		account: (await meRes.json()) as Account,
-		objects: ((await listRes.json()) ?? []) as StoredObject[]
+		objects: ((await listRes.json()) ?? []) as StoredObject[],
+		// A url list failure only empties the list; it must not sign the user out.
+		links: (linksRes?.ok ? ((await linksRes.json()) ?? []) : []) as ShortURL[]
 	};
 };
 

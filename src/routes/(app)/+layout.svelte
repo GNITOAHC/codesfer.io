@@ -7,6 +7,7 @@
 		Github,
 		LayoutDashboard,
 		Zap,
+		Link,
 		Menu,
 		X,
 		Sun,
@@ -69,6 +70,15 @@
 				>
 					<Zap class="h-4 w-4" />
 					Fast Upload
+				</Button>
+				<Button
+					variant={page.url.pathname.startsWith(resolve('/shorten')) ? 'secondary' : 'ghost'}
+					size="sm"
+					href={resolve('/shorten')}
+					class="gap-2"
+				>
+					<Link class="h-4 w-4" />
+					Shorten
 				</Button>
 				<Button variant="ghost" size="sm" onclick={() => theme.toggle()} aria-label="Toggle theme">
 					{#if $theme === 'dark'}
@@ -138,6 +148,15 @@
 					>
 						<Zap class="h-4 w-4" />
 						Fast Upload
+					</Button>
+					<Button
+						variant={page.url.pathname.startsWith(resolve('/shorten')) ? 'secondary' : 'ghost'}
+						href={resolve('/shorten')}
+						class="w-full justify-start gap-2"
+						onclick={() => (mobileMenuOpen = false)}
+					>
+						<Link class="h-4 w-4" />
+						Shorten
 					</Button>
 				</nav>
 			</div>

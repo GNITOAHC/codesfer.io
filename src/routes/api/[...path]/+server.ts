@@ -20,7 +20,7 @@ import { API_BASE } from '$lib/api';
 
 export const prerender = false;
 
-const ALLOWED_PREFIXES = ['storage/'];
+const ALLOWED_PREFIXES = ['storage/', 'url/'];
 const ALLOWED_PATHS = ['auth/logout'];
 
 const proxy: RequestHandler = async ({ params, request, url, cookies }) => {

@@ -3,11 +3,13 @@
 	import { LogOut } from '@lucide/svelte';
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
-	import { removeObject, logoutSession } from '$lib/api';
+	import { removeObject, logoutSession, removeShortURL } from '$lib/api';
 	import LoginCard from './LoginCard.svelte';
 	import UploadSection from './UploadSection.svelte';
 	import FileList from './FileList.svelte';
 	import SessionList from './SessionList.svelte';
+	import ShortenSection from './ShortenSection.svelte';
+	import LinkList from './LinkList.svelte';
 
 	let { data, form } = $props();
 
@@ -17,6 +19,16 @@
 		if (!confirm(`Delete "${key}"? This cannot be undone.`)) return;
 		try {
 			await removeObject(key);
+			await invalidateAll();
+		} catch (e) {
+			error = e instanceof Error ? e.message : String(e);
+		}
+	}
+
+	async function handleRemoveLink(handle: string) {
+		if (!confirm(`Delete short link "${handle}"? This cannot be undone.`)) return;
+		try {
+			await removeShortURL(handle);
 			await invalidateAll();
 		} catch (e) {
 			error = e instanceof Error ? e.message : String(e);
@@ -65,6 +77,8 @@
 
 		<UploadSection onuploaded={invalidateAll} />
 		<FileList objects={data.objects} onremove={handleRemove} />
+		<ShortenSection oncreated={invalidateAll} />
+		<LinkList links={data.links} onremove={handleRemoveLink} />
 		<SessionList sessions={data.account.sessions} onrevoke={handleRevoke} />
 	</div>
 {/if}
